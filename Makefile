@@ -58,10 +58,20 @@ setup-arduino:
 	arduino-cli lib install PubSubClient ESP32Servo
 
 build-cam:
+	@if [ ! -f sigap-cam-node/env.h ]; then \
+		echo "Error: sigap-cam-node/env.h not found!"; \
+		echo "Please copy sigap-cam-node/env.h.example to sigap-cam-node/env.h and fill in your credentials."; \
+		exit 1; \
+	fi
 	@echo "Compiling Cam Node..."
 	cd sigap-cam-node && arduino-cli compile --fqbn $(CAM_FQBN) sigap-cam-node.ino
 
 flash-cam:
+	@if [ ! -f sigap-cam-node/env.h ]; then \
+		echo "Error: sigap-cam-node/env.h not found!"; \
+		echo "Please copy sigap-cam-node/env.h.example to sigap-cam-node/env.h and fill in your credentials."; \
+		exit 1; \
+	fi
 	@ifndef PORT
 	$(error PORT is not set. Usage: make flash-cam PORT=/dev/ttyUSB0)
 	@endif
@@ -69,10 +79,20 @@ flash-cam:
 	cd sigap-cam-node && arduino-cli compile --fqbn $(CAM_FQBN) sigap-cam-node.ino && arduino-cli upload -p $(PORT) --fqbn $(CAM_FQBN) sigap-cam-node.ino
 
 build-gate:
+	@if [ ! -f sigap-gate-controller/env.h ]; then \
+		echo "Error: sigap-gate-controller/env.h not found!"; \
+		echo "Please copy sigap-gate-controller/env.h.example to sigap-gate-controller/env.h and fill in your credentials."; \
+		exit 1; \
+	fi
 	@echo "Compiling Gate Controller..."
 	cd sigap-gate-controller && arduino-cli compile --fqbn $(GATE_FQBN) sigap-gate-controller.ino
 
 flash-gate:
+	@if [ ! -f sigap-gate-controller/env.h ]; then \
+		echo "Error: sigap-gate-controller/env.h not found!"; \
+		echo "Please copy sigap-gate-controller/env.h.example to sigap-gate-controller/env.h and fill in your credentials."; \
+		exit 1; \
+	fi
 	@ifndef PORT
 	$(error PORT is not set. Usage: make flash-gate PORT=/dev/ttyUSB0)
 	@endif
