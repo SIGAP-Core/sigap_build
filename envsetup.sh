@@ -33,7 +33,7 @@ install_sys_pkg() {
     case "${DISTRO}" in
         ubuntu|debian|kali|raspbian)
             sudo apt update && sudo apt install -y $pkgs ;;
-        arch|manjaro)
+        arch|manjaro|cachyos)
             sudo pacman -Sy --noconfirm $pkgs ;;
         fedora)
             sudo dnf install -y $pkgs ;;
@@ -55,11 +55,12 @@ done
 if ! command -v snap &> /dev/null; then
     echo "🛠️  Menginstal snapd..."
     case "${DISTRO}" in
-        arch|manjaro)
+        arch|manjaro|cachyos)
             # Arch butuh manual AUR untuk snapd jika tidak ada, 
             # tapi kita coba gunakan pacman jika distro turunan menyediakannya
             sudo pacman -Sy --noconfirm snapd || echo "⚠️ Gagal instal snapd via pacman."
             sudo systemctl enable --now snapd.socket
+            sleep 3 # Beri waktu snapd untuk siap
             [ ! -L /var/lib/snapd/snap ] && sudo ln -s /var/lib/snapd/snap /snap
             ;;
         ubuntu|debian|kali)
@@ -76,7 +77,7 @@ echo "🚀 Menginstal main toolchain..."
 # Make & Build Tools
 if ! command -v make &> /dev/null; then
     case "${DISTRO}" in
-        arch|manjaro) install_sys_pkg base-devel ;;
+        arch|manjaro|cachyos) install_sys_pkg base-devel ;;
         ubuntu|debian|kali) install_sys_pkg build-essential ;;
         fedora) install_sys_pkg "make automake gcc gcc-c++" ;;
         *) install_sys_pkg make ;;
@@ -103,7 +104,7 @@ fi
 # Node.js & NPM
 if ! command -v npm &> /dev/null; then
     case "${DISTRO}" in
-        arch|manjaro) install_sys_pkg "nodejs npm" ;;
+        arch|manjaro|cachyos) install_sys_pkg "nodejs npm" ;;
         *) install_sys_pkg "nodejs npm" ;;
     esac
 fi
@@ -113,7 +114,13 @@ if ! command -v flutter &> /dev/null; then
     if command -v snap &> /dev/null; then
         echo "📥 Menginstal flutter via snap..."
         sudo snap install flutter --classic
-        flutter sdk-path
+        # Tambahkan snap bin ke PATH untuk sesi ini jika belum ada
+        export PATH="$PATH:/snap/bin"
+        if ! command -v flutter &> /dev/null; then
+             /snap/bin/flutter sdk-path || echo "⚠️ Flutter terinstal tapi belum bisa dijalankan. Coba restart terminal."
+        else
+             flutter sdk-path
+        fi
     else
         echo "⚠️  Snap tidak ditemukan, silakan instal Flutter SDK manual."
     fi

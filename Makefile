@@ -31,7 +31,7 @@ install-mobile:
 
 install-vision:
 	@echo "Installing Vision API dependencies..."
-	cd vision-api && python3 -m venv .venv && . .venv/bin/activate && pip install -r requirements.txt
+	cd vision-api && python3 -m venv .venv && ./.venv/bin/python -m pip install -r requirements.txt
 
 run-dashboard:
 	@echo "Starting Dashboard..."
@@ -39,7 +39,7 @@ run-dashboard:
 
 run-vision:
 	@echo "Starting Vision API..."
-	cd vision-api && . .venv/bin/activate && python main.py
+	cd vision-api && ./.venv/bin/python main.py
 
 run-mobile:
 	@echo "Starting Mobile App..."
@@ -59,22 +59,22 @@ setup-arduino:
 
 build-cam:
 	@echo "Compiling Cam Node..."
-	cd cam-node && arduino-cli compile --fqbn $$(CAM_FQBN) sigap-cam-node.ino
+	cd sigap-cam-node && arduino-cli compile --fqbn $(CAM_FQBN) sigap-cam-node.ino
 
 flash-cam:
 	@ifndef PORT
-	$$(error PORT is not set. Usage: make flash-cam PORT=/dev/ttyUSB0)
+	$(error PORT is not set. Usage: make flash-cam PORT=/dev/ttyUSB0)
 	@endif
-	@echo "Flashing Cam Node to $$(PORT)..."
-	cd cam-node && arduino-cli compile --fqbn $$(CAM_FQBN) sigap-cam-node.ino && arduino-cli upload -p $$(PORT) --fqbn $$(CAM_FQBN) sigap-cam-node.ino
+	@echo "Flashing Cam Node to $(PORT)..."
+	cd sigap-cam-node && arduino-cli compile --fqbn $(CAM_FQBN) sigap-cam-node.ino && arduino-cli upload -p $(PORT) --fqbn $(CAM_FQBN) sigap-cam-node.ino
 
 build-gate:
 	@echo "Compiling Gate Controller..."
-	cd gate-controller && arduino-cli compile --fqbn $$(GATE_FQBN) sigap-gate-controller.ino
+	cd sigap-gate-controller && arduino-cli compile --fqbn $(GATE_FQBN) sigap-gate-controller.ino
 
 flash-gate:
 	@ifndef PORT
-	$$(error PORT is not set. Usage: make flash-gate PORT=/dev/ttyUSB0)
+	$(error PORT is not set. Usage: make flash-gate PORT=/dev/ttyUSB0)
 	@endif
-	@echo "Flashing Gate Controller to $$(PORT)..."
-	cd gate-controller && arduino-cli compile --fqbn $$(GATE_FQBN) sigap-gate-controller.ino && arduino-cli upload -p $$(PORT) --fqbn $$(GATE_FQBN) sigap-gate-controller.ino
+	@echo "Flashing Gate Controller to $(PORT)..."
+	cd sigap-gate-controller && arduino-cli compile --fqbn $(GATE_FQBN) sigap-gate-controller.ino && arduino-cli upload -p $(PORT) --fqbn $(GATE_FQBN) sigap-gate-controller.ino
